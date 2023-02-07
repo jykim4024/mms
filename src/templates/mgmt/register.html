@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container my-3">
+  <a href="#" class="btn btn-primary" id="btn_save">저장</a>
+  <form method="post" class="post-form" id="detailForm">
+    <div class="row my-3">
+      <div class="card-body">
+        <div class="card-text" style="white-space: pre-line;">상세정보</div>
+      </div>
+      <table class="table" id="detailTable">
+        {{ form.csrf_token }}
+        {% include "form_errors.html" %}
+          <tr class="text-center thead-dark">
+            <th>대분류</th>
+            <td colspan="3">
+              <select class="form-control" name="mstcd" id="mstcd">
+                {% for mst_cd in mst_cd %}
+                <option value="{{ mst_cd[0] }}">{{ mst_cd[1] }} </option>
+                {% endfor %}
+              </select>
+            </td>
+            <th>중분류</th>
+            <td colspan="3">
+              <select class="form-control" name="detcd" id="detcd">
+                <option value="ALL">ALL</option>
+              </select>
+            </td>
+          </tr>
+          <tr class="text-center thead-dark">
+            <th>일련번호</th>
+            <td><input type="text" class="form-control" name="serialnum" id="serialnum" value=""></td>
+            <th>데이터1<input type="button" id="btn_data1" value="일괄적용"/></th>
+            <td><input type="text" class="form-control" name="datatx1" id="datatx1" value=""></td>
+            <th>데이터2<input type="button" id="btn_data2" value="일괄적용"/></th>
+            <td><input type="text" class="form-control" name="datatx2" id="datatx2" value=""></td>
+          </tr>                           
+        </table>
+    </div>
+  </form>
+  <div id="appendTr" style="display: none;">
+    <tr class="text-center thead-dark">
+      <th>일련번호</th>
+      <td><input type="text" class="form-control" name="serialnum" id="serialnum" value=""></td>
+      <th>데이터1</th>
+      <td><input type="text" class="form-control" name="datatx1" id="datatx1" value=""></td>
+      <th>데이터2</th>
+      <td><input type="text" class="form-control" name="datatx2" id="datatx2" value=""></td>
+    </tr>
+  </div>
+</div>
+{% endblock %}
+{% block script %}
+<script type='text/javascript'>
+$(document).ready(function(){
+  $('#hiredt').datepicker({
+    format : "yyyy-mm-dd",
+  });
+  
+  var html = '<tr class="text-center thead-dark"><th>일련번호</th><td><input type="text" class="form-control" name="serialnum" id="serialnum" value=""></td>';
+  html += '<th>데이터1</th><td><input type="text" class="form-control" name="datatx1" id="datatx1" value=""></td>';
+  html += '<th>데이터2</th><td><input type="text" class="form-control" name="datatx2" id="datatx2" value=""></td></tr>';
+  for (i=0; i<9; i++) {
+    $('#detailTable').append(html)
+  }
+  
+  $('#mstcd').change(function(){
+    if($(this).val() == 'ALL') {
+      $('#detcd').html('<option value="ALL">ALL</option>');
+    } else {
+      $.ajax({ 
+      type:'POST', 
+      url:'/mgmt/mgmtinfo/get_items', 
+      data:{ mst_cd: $(this).val() },
+      success: function(res){ 
+        console.log(res) 
+        var html = '';
+        $.each(res, function(i, data){
+          html += '<option value="'+res[i][0]+'">'+res[i][1]+'</option>';
+        });
+        $('#detcd').html(html);
+      }, error : function(xtr, status, error){ 
+        alert(xtr +":"+status+":"+error); 
+      } 
+    });
+    }
+  });
+
+  $('#btn_save').on('click', function() {
+    if($('#mstcd').val() == 'ALL' || $('#detcd').val() == 'ALL') {
+      alert('분류를 선택하여 주십시오.');
+      return false;
+    }
+    if (confirm("저장하시겠습니까? ")) {
+      $('#detailForm').submit();
+    }    
+  });
+
+  $('#btn_data1').on('click', function() {
+    $('input[name=datatx1]').attr('value',$('#datatx1').val());
+  });
+
+  $('#btn_data2').on('click', function() {
+    $('input[name=datatx2]').attr('value',$('#datatx2').val());
+  });
+
+});
+</script>
+{% endblock %} 

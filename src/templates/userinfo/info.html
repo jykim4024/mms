@@ -1,0 +1,149 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container my-3" style="max-width: 1500px; width: auto;">
+  <div class="row my-3">
+      <div class="card-body">
+        <div class="card-text" style="white-space: pre-line;">기본정보</div>
+      </div> 
+      <table class="table">
+          <thead>
+          <tr class="text-center thead-dark">
+              <th>사번</th>
+              <th>이름</th>
+              <th>직책</th>
+              <th>부서</th>
+              <th>입사일</th>
+              <th>수동할당여부</th>
+              <th>할당일</th>
+              <th>휴가소진일수</th>
+              <th>잔여일수</th>
+          </tr>
+          </thead>
+          <tbody>
+          {% if info_list %}
+          {% for info in info_list %}
+            <tr class="text-center">
+              <td><a class="nav-link" href="{{ url_for('auth.modify', biznum=info[0]) }}">{{ info[0] }}</a></td>
+              <td>{{ info[1] }}</td>
+              <td>{{ info[7] }}</td>
+              <td>{{ info[8] }}</td>
+              <td>{{ info[2] }}</td>
+              <td>{{ info[3] }}</td>
+              <td>{{ info[4] }}</td>
+              <td>{{ info[5] }}</td>
+              <td>{{ info[6] }}</td>
+<!--              <td>{{ info[7] }}</td>-->
+            </tr>
+          {% endfor %}
+          {% endif %}
+          </tbody>
+      </table>
+  </div>
+  <div class="row my-3"> 
+    <div class="card-body">
+      <div class="card-text" style="white-space: pre-line;">휴가현황 (금일기준 +14일까지 승인건에 한함)</div>
+    </div> 
+    <table class="table">
+      <thead>
+      <tr class="text-center thead-dark">
+          <th>사번</th>
+          <th>이름</th>
+          <th>휴가일</th>
+          <th>휴가종류</th>
+          <th>휴가신청유형</th>
+          <th>진행상태</th>
+          <th>휴가상태</th>
+      </tr>
+      </thead>
+      <tbody>
+      {% if vac_list %}
+      {% for vac in vac_list %}
+        {% if vac[8] == 'Y' %}
+        <tr class="text-center" style="font-weight:bold !important">
+        {% else %}
+        <tr class="text-center">
+        {% endif %}
+          <td>{{ vac[0] }}</td>
+          <td>{{ vac[1] }}</td>
+          <td>{{ vac[2] }}</td>
+          <td>{{ vac[3] }}</td>
+          <td>{{ vac[4] }}</td>
+          <td>{{ vac[5] }}</td>
+          <td>{{ vac[6] }}</td>
+      </tr>
+      {% endfor %}
+      {% endif %}
+      </tbody>
+    </table>
+  </div>
+  {% if g.level %}
+  <div class="row my-3"> 
+    <div class="card-body">
+      <div class="card-text" style="white-space: pre-line;">휴가신청 현황</div>
+    </div> 
+    <table class="table">
+      <thead>
+      <tr class="text-center thead-dark">
+          <th>사번</th>
+          <th>이름</th>
+          <th>휴가일</th>
+          <th>휴가종류</th>
+          <th>휴가신청유형</th>
+          <th>진행상태</th>
+          <th>휴가상태</th>
+      </tr>
+      </thead>
+      <tbody>
+      {% if vac_req_list %}
+      {% for vac in vac_req_list %}
+      <tr class="text-center">
+          <td>{{ vac[0] }}</td>
+          <td>{{ vac[1] }}</td>
+          <td>{{ vac[2] }}</td>
+          <td>{{ vac[3] }}</td>
+          <td>{{ vac[4] }}</td>
+          <td>{{ vac[5] }}</td>
+          <td>{{ vac[6] }}</td>          
+      </tr>
+      {% endfor %}
+      {% endif %}
+      </tbody>
+    </table>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
+{% block script %}
+<script type='text/javascript'>
+  function saveVacProgress(param, biznum, vacdt, vacty, vacsts, _exhaust, _leftover, msg) {    
+    if (confirm("휴가신청을 "+msg+"하시겠습니까? ")) {
+      $('#biznum').val(biznum);
+      $('#vacdt').val(vacdt);
+      if(param == 'agree') {
+        $("#actiontype").val('AGREE');    
+        $('#prosts').val('MD602')
+      } else {
+        var leftover = _leftover;
+        var exhaust = _exhaust;
+        if(vacsts == 'MD901') {
+          if(vacty == 'MD402' || vacty == 'MD403') {  // 휴가종류가 반차인경우
+            leftover = parseFloat(leftover) + 0.5;
+            exhaust = parseFloat(exhaust) - 0.5;
+          } else {  // 휴가종류가 전일인 경우
+            leftover = parseFloat(leftover) + 1;
+            exhaust = parseFloat(exhaust) - 1;
+          }
+        }
+        $('#exhaust').val(exhaust);
+        $('#leftover').val(leftover);
+        $("#actiontype").val('DENY');
+        $('#prosts').val('MD603');
+      }
+      $("#detailForm").attr("action","{{ url_for('uservac.vacinfo') }}");
+      $("#detailForm").submit();
+    } else {
+      
+    }    
+  }
+</script>
+{% endblock %}

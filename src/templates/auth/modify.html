@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container my-3">  
+  <form method="post" class="post-form" id="loginForm">
+      {{ form.csrf_token }}
+      {% include "form_errors.html" %}
+      <div class="form-group">
+          <label for="username">사용자 이름</label>
+          <input type="text" class="form-control" name="username" id="username" readonly
+                  value="{{ user[0][1] or '' }}">
+      </div>        
+      <hr>        
+      <div class="form-group">
+          <label for="phonenum">전화번호</label>
+          <input type="text" class="form-control" name="phonenum" id="phonenum"
+                  value="{{ user[0][5] or '' }}">
+      </div>
+      <div class="form-group">
+          <label for="rankcd">직급코드</label>
+          <select class="form-control so" name="rankcd" id="rankcd">
+            {% for rank in rank_list %}
+            <option value="{{ rank[0] }}">{{ rank[1] }} </option>
+            {% endfor %}
+          </select>
+      </div>
+      <div class="form-group">
+          <label for="deptcd">부서코드</label>
+          <select class="form-control so" name="deptcd" id="deptcd">
+            {% if dept_list %}
+            {% for dept in dept_list %}
+            <option value="{{ dept[0] }}">{{ dept[1] }} </option>
+            {% endfor %}
+            {% endif %}
+          </select>
+      </div>
+      <div class="form-group">
+          <label for="email">이메일</label>
+          <input type="text" class="form-control" name="email" id="email"
+                  value="{{ user[0][8] or '' }}">
+      </div>
+      <div class="form-group">
+        <label for="remark">비고</label>
+        <input type="text" class="form-control" name="remark" id="remark"
+                value="{{ user[0][9] or '' }}">
+      </div>
+      <div class="form-group">
+        <label for="hiredt">입사일자</label>
+        <input type="text" class="form-control" name="hiredt" id="hiredt"
+                value="{{ user[0][2] or '' }}">
+      </div>
+      <div class="form-group">
+        <label for="mnlyn">수동할당구분</label>
+        <select class="form-control so" name="mnlyn" id="mnlyn">
+          <option value="Y">Y</option>
+          <option value="N">N</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="mnldnum">수동할당일자</label>
+        <input type="text" class="form-control" name="mnldnum" id="mnldnum"
+                value="{{ user[0][4] or '0' }}">
+      </div>
+      <button type="button" class="btn btn-primary" id="btn_modify">수정하기</button>     
+  </form>  
+  {% if g.level %}
+  <div class="card-body">
+    <div class="card-text" style="white-space: pre-line;">휴가현황</div>
+  </div> 
+  <table class="table">
+    <thead>
+    <tr class="text-center thead-dark">
+        <th>휴가일자</th>
+        <th>요청일자</th>
+        <th>휴가종류</th>
+        <th>휴가신청유형</th>
+        <th>진행상태</th>
+        <th>휴가상태</th>
+        <th>Remark</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% if my_vac_list %}
+    {% for vac in my_vac_list %}
+      {% if vac[11] == 'Y' %}
+      <tr class="text-center" style="color:lightgray !important">
+      {% elif vac[12] == 'Y' %}
+      <tr class="text-center" style="font-weight:bold !important">
+      {% else %}
+      <tr class="text-center">
+      {% endif %}
+        <td>{{ vac[0] }}</td>
+        <td>{{ vac[1] }}</td>
+        <td>{{ vac[3] }}</td>
+        <td>{{ vac[5] }}</td>
+        <td>{{ vac[7] }}</td>
+        <td>{{ vac[9] }}</td>
+        <td>{{ vac[10] }}</td>
+      </tr>
+    {% endfor %}
+    {% endif %}
+    </tbody>
+  </table>
+  {% endif %}
+</div>
+{% endblock %}
+{% block script %}
+<script type='text/javascript'>
+$(document).ready(function(){
+  $('#hiredt').datepicker({
+    format : "yyyy-mm-dd",
+  });
+  $('#rankcd').val("{{user[0][6]}}")
+  $('#deptcd').val("{{user[0][7]}}")
+  $('#mnlyn').val("{{user[0][3]}}")
+  
+  if('{{g.level}}' == 'None') {
+    $('#rankcd').prop('disabled',true);
+    $('#deptcd').prop('disabled',true);
+    $('#hiredt').prop('disabled',true);
+    $('#mnlyn').prop('disabled','true');
+    $('#mnldnum').prop('readonly','readonly');
+  }
+
+  $('#btn_modify').on('click', function() {
+    $('#rankcd').prop('disabled',false);
+    $('#deptcd').prop('disabled',false);
+    $('#hiredt').prop('disabled',false);
+    $('#mnlyn').prop('disabled',false);
+    $('#loginForm').submit();
+  });
+  
+});
+</script>
+{% endblock %} 
