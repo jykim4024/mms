@@ -1,4 +1,4 @@
-from .modules import collection as clt
+from src.modules import collection as clt
 
 config = clt.configparser.ConfigParser()
 
