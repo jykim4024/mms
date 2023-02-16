@@ -1,10 +1,71 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+{% extends "base.html" %}
+{% block content %}
+<div class="container my-3">
+    <form method="post" class="post-form">
+        {{ form.csrf_token }}
+        {% include "form_errors.html" %}
+        <div class="form-group">
+            <label for="usrId">사용자 ID</label>
+            <input type="text" class="form-control" name="usrId" id="usrId"
+                   value="{{ form.usrId.data or '' }}">
+        </div>
+        <hr>
+        <div class="form-group">
+            <label for="usrNm">사용자 이름</label>
+            <input type="text" class="form-control" name="usrNm" id="usrNm"
+                   value="{{ form.usrNm.data or '' }}">
+        </div>
+        <hr>
+        <div class="form-group">
+            <label for="usrtypcd">사용자 유형</label>
+            <input type="text" class="form-control" name="usrtypcd" id="usrtypcd"
+                   value="{{ form.usrtypcd.data or '' }}">
+        </div>
+        <hr>
+        <div class="form-group">
+            <label for="gendercd">성별</label>
+            <input type="text" class="form-control" name="gendercd" id="gendercd"
+                   value="{{ form.gendercd.data or '' }}">
+        </div>
+        <hr>
+        <div class="form-group">
+            <label for="pw1">비밀번호</label>
+            <input type="password" class="form-control" name="pw1" id="pw1"
+                   value="{{ form.pw1.data or '' }}">
+            <br />
+            <label for="pw2">비밀번호 확인</label>
+            <input type="password" class="form-control width='50%'" name="pw2" id="pw2"
+                   value="{{ form.pw2.data or '' }}">
+        </div>
+        <hr>
+        <div class="form-group">
+            <label for="mobile">전화번호</label>
+            <input type="text" class="form-control" name="mobile" id="mobile"
+                   value="{{ form.mobile.data or '' }}">
+        </div>
+        <hr>
+        <div class="form-group">
+            <label for="emcmobile">비상전화번호</label>
+            <input type="text" class="form-control" name="emcmobile" id="emcmobile"
+                   value="{{ form.emcmobile.data or '' }}">
+        </div>
+        <hr>
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input type="text" class="form-control" name="email" id="email"
+                   value="{{ form.email.data or '' }}">
+        </div>
+        <button type="submit" class="btn btn-primary">생성하기</button>
+
+    </form>
+</div>
+{% endblock %}
+{% block script %}
+<script type='text/javascript'>
+$(document).ready(function(){
+  $('#hiredt').datepicker({
+    format : "yyyy-mm-dd",
+  });
+});
+</script>
+{% endblock %} 

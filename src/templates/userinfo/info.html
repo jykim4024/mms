@@ -1,10 +1,15 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+{% extends 'base.html' %}
+{% block content %}
+<div class="container my-3" style="max-width: 1500px; width: auto;">
+  <div class="row my-3">
+      <div class="card-body">
+          <div class="card-text" style="white-space: pre-line;"><b><u>사용자 상세정보</u></b></div>
+          <div class="card-text" style="white-space: pre-line;"><b><u>사용자ID : {{g.user[0][0]}}</u></b></div>
+          <div class="card-text" style="white-space: pre-line;"><b><u>사용자이름 : {{g.user[0][1]}}</u></b></div>
+          <div class="card-text" style="white-space: pre-line;"><b><u>사용자유형 : {{g.level}}</u></b></div>
+      </div>
+  </div>
+</div>
+<script type='text/javascript'>
+</script>
+{% endblock %}

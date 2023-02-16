@@ -15,7 +15,6 @@ def login():
 
     if request.method == 'POST' and form.validate_on_submit():
         error = None
-        print(form.usrId.data)
         user = db.select_userInfoById(form.usrId.data)
         if not user:
             error = "존재하지 않는 사용자입니다."
@@ -24,6 +23,7 @@ def login():
         if error is None:
             session.clear()
             session['usr_id'] = user[0][0]
+            session['usr_nm'] = user[0][1]
             session['usr_typ_cd'] = user[0][2]
             return redirect(url_for('main.index'))
         flash(error)
@@ -47,3 +47,36 @@ def signup():
     # rank_list = db.select_commCdList('RANK_CD')
     return render_template('auth/signup.html', form=form)
 
+@bp.route('/logout/')
+def logout():
+    session.clear()
+    return redirect(url_for('main.index'))
+
+@bp.before_app_request
+def load_logged_in_user():
+    usr_id = session.get('usr_id')
+    if usr_id is None:
+        g.user = None
+    else:
+        g.user = db.select_userInfoById(usr_id)
+
+@bp.before_app_request
+def user_auth():
+    usr_id = session.get('usr_id')
+    usr_typ = session.get('usr_typ_cd')
+    if usr_id is None:
+        g.auth = None
+    else:
+        g.auth = usr_typ
+        if g.auth == '00':
+            g.level = 'super'
+        else:
+            g.level = None
+
+# def login_required(view):
+#     @functools.wraps(view)
+#     def wrapped_view(**kwargs):
+#         if g.user is None:
+#             return redirect(url_for('auth.login'))
+#         return view(**kwargs)
+#     return wrapped_view

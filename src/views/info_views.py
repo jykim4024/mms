@@ -3,10 +3,10 @@ from datetime import datetime
 from flask import Blueprint, render_template, request, url_for, flash, session, g
 from werkzeug.utils import redirect
 from werkzeug.security import generate_password_hash
-from src.models import db
-from src.models.forms import UserLoginForm
+from ..models import db
+from ..models.forms import UserLoginForm
 
-bp = Blueprint('userinfo', __name__, url_prefix='/userinfo')
+bp = Blueprint('info', __name__, url_prefix='/info')
 
 
 @bp.route('/infolist/')

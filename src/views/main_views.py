@@ -6,4 +6,7 @@ bp = Blueprint('main',__name__,url_prefix='/')
 @bp.route('/')
 def index():
     usr_id = session.get('usr_id')
-    return redirect(url_for('auth.login'))
+    if usr_id is None:
+        return redirect(url_for('auth.login'))
+    else:
+        return redirect(url_for('info.infolist'))
