@@ -27,3 +27,36 @@ def insert_userInfo(usrId,usrNm,usrTypCd,pw,genderCd,mobile,emcMobile,email):
             conn.commit()
     finally:
         conn.close()
+
+def select_board_list():
+    conn = db_conn()
+    try:
+        with conn.cursor() as curs:
+            sql = "WITH MAIN AS " \
+                  "  ( SELECT BOARD_ID , TITLE , CONTENT , REG_DTM , REG_USR_ID FROM BOARD_MST ) " \
+                  "  SELECT ROW_NUMBER () OVER(PARTITION BY M.BOARD_ID ORDER BY M.REG_DTM DESC) AS RNUM" \
+                  "      , M.BOARD_ID, M.TITLE, M.CONTENT, DATE_FORMAT(M.REG_DTM,'%Y%m%d') AS REG_DT " \
+                  "      , M.REG_USR_ID AS USR_ID, FN_USER_NM(M.REG_USR_ID) AS USR_NM, M.REG_DTM " \
+                  "    FROM MAIN AS M ORDER BY REG_DTM DESC"
+            curs.execute(sql)
+            rs = curs.fetchall()
+            return rs
+    finally:
+        conn.close()
+
+def select_board_dtl(boardId):
+    conn = db_conn()
+    try:
+        with conn.cursor() as curs:
+            sql = "SELECT BD.BOARD_ID, BM.TITLE, BM.CONTENT, BM.REG_DTM, BM.REG_USR_ID AS USR_ID, FN_USER_NM(BM.REG_USR_ID) AS USR_NM, BD.QUESTION_ID, BD.QUESTION " \
+                  "      , BD.CONTENT, BD.REG_DTM, BD.REG_USR_ID AS Q_USR_ID, FN_USER_NM(BD.REG_USR_ID) AS Q_USR_NM " \
+                  "    FROM BOARD_DTL AS BD " \
+                  "    INNER JOIN BOARD_MST AS BM ON BD.BOARD_ID = BM.BOARD_ID " \
+                  "   WHERE 1=1 " \
+                  "     AND BD.BOARD_ID = %s " \
+                  "  ORDER BY QUESTION ASC"
+            curs.execute(sql,(boardId))
+            rs = curs.fetchall()
+            return rs
+    finally:
+        conn.close()

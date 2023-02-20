@@ -9,4 +9,4 @@ def index():
     if usr_id is None:
         return redirect(url_for('auth.login'))
     else:
-        return redirect(url_for('info.infolist'))
+        return redirect(url_for('board.boardm'))

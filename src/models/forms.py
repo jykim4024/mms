@@ -19,3 +19,13 @@ class UserCreateForm(FlaskForm):
     mobile = StringField('핸드폰번호', validators=[DataRequired(), Length(min=3, max=20)])
     emcmobile = StringField('비상연락핸드폰번호', validators=[DataRequired(), Length(min=3, max=20)])
     email = EmailField('이메일', validators=[DataRequired(), Email()])
+
+class BoardMstForm(FlaskForm):
+    boardId = StringField('게시판ID', validators=[DataRequired(), Length(min=3, max=20)])
+    title = StringField('제목', validators=[DataRequired(), Length(min=3, max=200)])
+    content = StringField('내용', validators=[DataRequired(), Length(min=3, max=1000)])
+
+class BoardDtlForm(FlaskForm):
+    boardId = StringField('게시판ID', validators=[DataRequired(), Length(min=3, max=20)])
+    QuestionId = StringField('질문ID', validators=[DataRequired(), Length(min=3, max=20)])
+    content = StringField('내용', validators=[DataRequired(), Length(min=3, max=1000)])

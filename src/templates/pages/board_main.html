@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container my-3" style="max-width: 1500px; width: auto;">
+  <div class="row my-3">
+      <div class="card-body">
+        <div class="card-text" style="white-space: pre-line;">게시목록</div>
+      </div> 
+      <table class="myTable table">
+          <thead>
+          <tr class="text-center thead-dark">
+              <th>순번</th>
+              <th>게시번호</th>
+              <th>제목</th>
+              <th>내용</th>
+              <th>등록일자</th>
+              <th>등록자명</th>
+              <th>등록자ID</th>
+              <th>등록일시</th>
+          </tr>
+          </thead>
+          <tbody>
+          {% if boardMainList %}
+          {% for boardMain in boardMainList %}
+            <tr class="text-center">
+              <td>{{ boardMain[0] }}</td>
+              <td>{{ boardMain[1] }}</td>
+              <td>{{ boardMain[2] }}</td>
+              <td>{{ boardMain[3] }}</td>
+              <td>{{ boardMain[4] }}</td>
+              <td>{{ boardMain[6] }}</td>
+              <td>{{ boardMain[5] }}</td>
+              <td>{{ boardMain[7] }}</td>
+            </tr>
+          {% endfor %}
+          {% endif %}
+          </tbody>
+      </table>
+  </div>
+</div>
+{% endblock %}
+{% block script %}
+<script type='text/javascript'>
+  let options = {
+        numberPerPage:15, //Cantidad de datos por pagina
+        goBar:true, //Barra donde puedes digitar el numero de la pagina al que quiere ir
+        pageCounter:true, //Contador de paginas, en cual estas, de cuantas paginas
+    };
+    paginate.init('.myTable',options);
+
+  $(document).ready(function(){
+    $('#stdt').datepicker({
+      format : "yyyy-mm-dd",
+    }).datepicker("setDate", "-12M");
+
+    $('#eddt').datepicker({
+      format : "yyyy-mm-dd",
+    }).datepicker("setDate", "today");
+
+    
+    $('#mstcd').change(function(){
+      if($(this).val() == 'ALL') {
+        $('#detcd').html('<option value="ALL">ALL</option>');
+      } else {
+        $.ajax({ 
+        type:'POST', 
+        url:'/mgmt/mgmtinfo/get_items', 
+        data:{ mst_cd: $(this).val() },
+        success: function(res){ 
+          var html = '';
+          $.each(res, function(i, data){
+            html += '<option value="'+res[i][0]+'">'+res[i][1]+'</option>';
+          });
+          $('#detcd').html(html);
+        }, error : function(xtr, status, error){ 
+          alert(xtr +":"+status+":"+error); 
+        } 
+      });
+      }
+    });  
+    
+    if('{{mstcd}}' != 'ALL') {
+      $('#mstcd').val('{{mstcd}}');
+      $('#mstcd').trigger('change');
+      if('{{detcd}}' != '1') {
+        setTimeout(function() {
+          $('#detcd').val('{{detcd}}');
+        }, 500);
+      };
+    }
+  });
+
+  $('#btn_search').on('click', function() {
+    $("#searchForm").submit();
+  });
+
+</script>
+{% endblock %}
